@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <!-- Settings -->
+  <IM.IgnoreStorageSettings>Игнорировать настройки склада (Авто-разрешение)</IM.IgnoreStorageSettings>
+  <IM.IgnoreStorageSettingsDesc>РАЗРЕШИТ ПРЕДМЕТ В ФИЛЬТРЕ, если склад физически может его принять (не работает для еды на стойках оружия).</IM.IgnoreStorageSettingsDesc>
+  <IM.AllowManualDrop>Разрешить ручной сброс заблокированных предметов</IM.AllowManualDrop>
+  <IM.ShowStorageLock>Показывать кнопку блокировки выгрузки</IM.ShowStorageLock>
+  <IM.ShowConsumeLock>Показывать кнопку блокировки автоиспользования</IM.ShowConsumeLock>
+  <IM.ShowUnloadGizmo>Показывать кнопку быстрой разгрузки</IM.ShowUnloadGizmo>
+  <IM.UseSliderForStacks>Показывать ползунок для стаков</IM.UseSliderForStacks>
+
+  <!-- Gizmos & Tooltips -->
+  <IM.Unload>Разгрузить</IM.Unload>
+  <IM.UnloadDesc>Сложить все незаблокированные вещи на подходящие склады.</IM.UnloadDesc>
+  <IM.NoStorageFound>Некуда класть вещи (склады полны или не настроены).</IM.NoStorageFound>
+  <IM.StorageLockTooltip>Заблокировать выгрузку на склад</IM.StorageLockTooltip>
+  <IM.ConsumeLockTooltip>Запретить пешке автоиспользование/экипировку</IM.ConsumeLockTooltip>
+  <IM.ItemIsLocked>Предмет заблокирован от выброса.</IM.ItemIsLocked>
+
+  <!-- Float Menu Options -->
+  <IM.GiveToPawn>Передать {0}...</IM.GiveToPawn>
+  <IM.GiveAll>Передать всё</IM.GiveAll>
+  <IM.GiveItem>Передать {0}</IM.GiveItem>
+  <IM.GiveItemMany>Передать {0}...</IM.GiveItemMany>
+  <IM.GiveAllItem>Передать всё: {0}</IM.GiveAllItem>
+  <IM.GiveSlider>Передать: </IM.GiveSlider>
+  <IM.TakeFromPawn>Забрать у {0}...</IM.TakeFromPawn>
+  <IM.TakeAll>Забрать всё</IM.TakeAll>
+  <IM.TakeItem>Забрать {0}</IM.TakeItem>
+  <IM.TakeFailedOverweight>Невозможно забрать {0}: уже есть перевес у {1}.</IM.TakeFailedOverweight>
+  <IM.TakeSlider>Забрать: </IM.TakeSlider>
+  <IM.TakeItemMany>Забрать {0}...</IM.TakeItemMany>
+  <IM.TakeAllItem>Забрать всё: {0}</IM.TakeAllItem>
+  <IM.TakeAllPartialOverweight>Забрано не всё ({0}): начался перевес у {1}.</IM.TakeAllPartialOverweight>
+  <IM.Store>Сложить...</IM.Store>
+  <IM.StoreInventory>Сложить инвентарь</IM.StoreInventory>
+  <IM.StoreItem>Сложить {0}</IM.StoreItem>
+  <IM.StoreSlider>Сложить: </IM.StoreSlider>
+  <IM.StoreItemMany>Сложить {0}...</IM.StoreItemMany>
+  <IM.StoreAllItem>Сложить всё: {0}</IM.StoreAllItem>
+  <IM.Take>Взять...</IM.Take>
+  <IM.TakeAllFromStorage>Взять всё</IM.TakeAllFromStorage>
+  <IM.TakeItemFromStorage>Взять {0}</IM.TakeItemFromStorage>
+  <IM.TakeFailedOverweightFromStorage>Невозможно взять {0}: уже есть перевес у {1}.</IM.TakeFailedOverweightFromStorage>
+  <IM.TakeSliderFromStorage>Взять: </IM.TakeSliderFromStorage>
+  <IM.TakeItemManyFromStorage>Взять {0}...</IM.TakeItemManyFromStorage>
+  <IM.TakeAllItemFromStorage>Взять всё: {0}</IM.TakeAllItemFromStorage>
+  <IM.TakeAllPartialOverweightFromStorage>Взято не всё ({0}): начался перевес у {1}.</IM.TakeAllPartialOverweightFromStorage>
+  <IM.Gear>Снаряжение...</IM.Gear>
+  <IM.UnequipApparel>Снять одежду...</IM.UnequipApparel>
+  <IM.UnequipAll>Снять всё</IM.UnequipAll>
+  <IM.UnequipItem>Снять {0}</IM.UnequipItem>
+  <IM.EquipApparel>Надеть одежду...</IM.EquipApparel>
+  <IM.WearAll>Надеть всё</IM.WearAll>
+  <IM.WearItem>Надеть {0}</IM.WearItem>
+  <IM.GiveFailedOverweight>Невозможно передать {0}: уже есть перевес у {1}.</IM.GiveFailedOverweight>
+  <IM.TakeAllPartialOverweightGeneral>Взято не всё: начался перевес у {0}.</IM.TakeAllPartialOverweightGeneral>
+
+</LanguageData>

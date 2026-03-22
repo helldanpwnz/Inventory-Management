@@ -1,0 +1,14 @@
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Quick Unload\1.6\Assemblies\Quick Unload.dll
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Quick Unload\Source\obj\Debug\Quick Unload.csproj.AssemblyReference.cache
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Quick Unload\Source\obj\Debug\Quick Unload.GeneratedMSBuildEditorConfig.editorconfig
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Quick Unload\Source\obj\Debug\Quick Unload.AssemblyInfoInputs.cache
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Quick Unload\Source\obj\Debug\Quick Unload.AssemblyInfo.cs
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Quick Unload\Source\obj\Debug\Quick Unload.csproj.CoreCompileInputs.cache
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Quick Unload\Source\obj\Debug\Quick Unload.dll
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Inventory Management\1.6\Assemblies\Quick Unload.dll
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Inventory Management\Source\obj\Debug\Quick Unload.csproj.AssemblyReference.cache
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Inventory Management\Source\obj\Debug\Quick Unload.GeneratedMSBuildEditorConfig.editorconfig
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Inventory Management\Source\obj\Debug\Quick Unload.AssemblyInfoInputs.cache
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Inventory Management\Source\obj\Debug\Quick Unload.AssemblyInfo.cs
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Inventory Management\Source\obj\Debug\Quick Unload.csproj.CoreCompileInputs.cache
+E:\SteamLibrary\steamapps\common\RimWorld\Mods\Inventory Management\Source\obj\Debug\Quick Unload.dll

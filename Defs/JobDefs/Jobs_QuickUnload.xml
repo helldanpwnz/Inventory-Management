@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>QuickUnloadInventory</defName>
+    <driverClass>InventoryManagement.JobDriver_QuickUnloadInventory</driverClass>
+    <reportString>выгружает инвентарь.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+
+  <JobDef>
+    <defName>QuickLoadInventory</defName>
+    <driverClass>InventoryManagement.JobDriver_QuickLoadInventory</driverClass>
+    <reportString>забирает вещи.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+
+  <JobDef>
+    <defName>QuickGiveInventory</defName>
+    <driverClass>InventoryManagement.JobDriver_QuickGiveInventory</driverClass>
+    <reportString>передает вещи.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+  
+
+  
+  <JobDef>
+    <defName>QuickUnequipApparel</defName>
+    <driverClass>InventoryManagement.JobDriver_QuickUnequipApparel</driverClass>
+    <reportString>снимает одежду.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+
+  <JobDef>
+    <defName>QuickEquipApparel</defName>
+    <driverClass>InventoryManagement.JobDriver_QuickEquipApparel</driverClass>
+    <reportString>надевает одежду.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+  
+  <JobDef>
+    <defName>QuickTakeInventory</defName>
+    <driverClass>InventoryManagement.JobDriver_QuickTakeInventory</driverClass>
+    <reportString>забирает вещи.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
+
+  
+</Defs>
