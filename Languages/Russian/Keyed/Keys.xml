@@ -9,6 +9,10 @@
   <IM.ShowConsumeLock>Показывать кнопку блокировки автоиспользования</IM.ShowConsumeLock>
   <IM.ShowUnloadGizmo>Показывать кнопку быстрой разгрузки</IM.ShowUnloadGizmo>
   <IM.UseSliderForStacks>Показывать ползунок для стаков</IM.UseSliderForStacks>
+  <IM.EnableDropCountSlider>Включить сброс по частям (Shift+Клик)</IM.EnableDropCountSlider>
+
+  <IM.DropCount>Выкинуть: {0} шт. ({1})</IM.DropCount>
+  <IM.StackDropTooltip>Удерживайте Shift, чтобы выбрать количество.</IM.StackDropTooltip>
 
   <!-- Gizmos & Tooltips -->
   <IM.Unload>Разгрузить</IM.Unload>

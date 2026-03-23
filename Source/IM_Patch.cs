@@ -37,35 +37,82 @@ namespace InventoryManagement
                     harmony.Patch(targetMethod, 
                         prefix: new HarmonyMethod(typeof(Patch_DrawThingRow), nameof(Patch_DrawThingRow.Prefix)),
                         postfix: new HarmonyMethod(typeof(Patch_DrawThingRow), nameof(Patch_DrawThingRow.Postfix)));
+                    
+                    // ДОБАВЛЯЕМ ПОДДЕРЖКУ ПОДСКАЗОК (DropSome)
+                    harmony.Patch(targetMethod, 
+                        prefix: new HarmonyMethod(typeof(Patch_Drop), nameof(Patch_Drop.DrawPrefix)),
+                        postfix: new HarmonyMethod(typeof(Patch_Drop), nameof(Patch_Drop.DrawPostfix)));
+                }
+
+                // Доп-перехват для RPG-сброса (если есть InterfaceDrop)
+                var dropMethod = AccessTools.Method(targetType, "InterfaceDrop");
+                if (dropMethod != null)
+                {
+                    harmony.Patch(dropMethod, prefix: new HarmonyMethod(typeof(Patch_Drop), nameof(Patch_Drop.Prefix_InterfaceDrop)));
                 }
             }
 
-            // === 2. ПАТЧ ДЛЯ NICE INVENTORY TAB ===
-         //  var nitEquippedType = AccessTools.TypeByName("NiceInventoryTab.EquippedItem");
-         //   if (nitEquippedType != null)
-         //   {
-         //       var drawMethod = AccessTools.Method(nitEquippedType, "Draw");
-          //      if (drawMethod != null)
-          //          harmony.Patch(drawMethod, 
-         //               prefix: new HarmonyMethod(typeof(Patch_NiceInventoryTab), nameof(Patch_NiceInventoryTab.Prefix_DrawItem)),
-          //              postfix: new HarmonyMethod(typeof(Patch_NiceInventoryTab), nameof(Patch_NiceInventoryTab.Postfix_DrawItem)));
-         //   }
-
+            // === 2. ПАТЧИ ДЛЯ NICE INVENTORY TAB ===
             var nitInvType = AccessTools.TypeByName("NiceInventoryTab.InventoryItem");
             if (nitInvType != null)
             {
                 var drawMethod = AccessTools.Method(nitInvType, "Draw");
                 if (drawMethod != null)
+                {
+                    // Обычные замки
                     harmony.Patch(drawMethod, 
                         prefix: new HarmonyMethod(typeof(Patch_NiceInventoryTab), nameof(Patch_NiceInventoryTab.Prefix_DrawItem)),
                         postfix: new HarmonyMethod(typeof(Patch_NiceInventoryTab), nameof(Patch_NiceInventoryTab.Postfix_DrawItem)));
+                    
+                    // Поддержка подсказок (DropSome)
+                    harmony.Patch(drawMethod, 
+                        prefix: new HarmonyMethod(typeof(Patch_NiceInventoryTab), nameof(Patch_NiceInventoryTab.Prefix_DropSome_Tip)),
+                        postfix: new HarmonyMethod(typeof(Patch_NiceInventoryTab), nameof(Patch_NiceInventoryTab.Postfix_DropSome_Tip)));
+                }
             }
+            
+            var nitEquippedType = AccessTools.TypeByName("NiceInventoryTab.EquippedItem");
+            if (nitEquippedType != null)
+            {
+                var drawMethod = AccessTools.Method(nitEquippedType, "Draw");
+                if (drawMethod != null)
+                {
+                    // Поддержка подсказок (DropSome)
+                    harmony.Patch(drawMethod, 
+                        prefix: new HarmonyMethod(typeof(Patch_NiceInventoryTab), nameof(Patch_NiceInventoryTab.Prefix_DropSome_Tip)),
+                        postfix: new HarmonyMethod(typeof(Patch_NiceInventoryTab), nameof(Patch_NiceInventoryTab.Postfix_DropSome_Tip)));
+                }
+            }
+
+            // Статический метод сброса в Nice Inventory
+            var nitUtils = AccessTools.TypeByName("NiceInventoryTab.CommandUtility");
+            if (nitUtils != null)
+            {
+                var cmdDrop = AccessTools.Method(nitUtils, "CommandDrop");
+                if (cmdDrop != null)
+                {
+                    harmony.Patch(cmdDrop, prefix: new HarmonyMethod(typeof(Patch_Drop), nameof(Patch_Drop.Prefix_CommandDrop)));
+                }
+            }
+
+            // === 3. ВАНИЛЬНЫЕ ПАТЧИ ДЛЯ DROP SOME (Shift+Click) ===
+            var vanInterfaceDrop = AccessTools.Method(typeof(ITab_Pawn_Gear), "InterfaceDrop");
+            if (vanInterfaceDrop != null)
+                harmony.Patch(vanInterfaceDrop, prefix: new HarmonyMethod(typeof(Patch_Drop), nameof(Patch_Drop.Prefix_InterfaceDrop)));
+
+            // Патч на подсказки TooltipHandler
+            var tipRegionSig = AccessTools.Method(typeof(TooltipHandler), "TipRegion", new[] { typeof(Rect), typeof(TipSignal) });
+            if (tipRegionSig != null)
+                harmony.Patch(tipRegionSig, prefix: new HarmonyMethod(typeof(Patch_Drop), nameof(Patch_Drop.Prefix_TipRegion)));
+
+            var tipRegionTag = AccessTools.Method(typeof(TooltipHandler), "TipRegion", new[] { typeof(Rect), typeof(TaggedString) });
+            if (tipRegionTag != null)
+                harmony.Patch(tipRegionTag, prefix: new HarmonyMethod(typeof(Patch_Drop), nameof(Patch_Drop.Prefix_TipRegion_Tagged)));
         }
     }
 
     public static class Patch_NiceInventoryTab
     {
-        // Кэшируем доступ к полям чужого мода. object — тип владельца, Thing/Rect — типы полей.
         private static AccessTools.FieldRef<object, Thing> itemField;
         private static AccessTools.FieldRef<object, Rect> geometryField;
 
@@ -75,63 +122,61 @@ namespace InventoryManagement
             if (geometryField == null) geometryField = AccessTools.FieldRefAccess<Rect>(instance.GetType(), "Geometry");
         }
 
-        // 1. ПРЕФИКС: Перехватываем клик ДО того, как основной мод создаст свою кнопку
+        // Вспомогательный патч для тултипов DropSome в Nice Inventory
+        // Из-за того что InventoryItem и EquippedItem — разные классы, используем простую рефлексию или передаем тип
+        public static void Prefix_DropSome_Tip(object __instance)
+        {
+            Thing thing = (Thing)AccessTools.Field(__instance.GetType(), "Item")?.GetValue(__instance);
+            if (thing != null) Patch_Drop.DrawPrefix(thing);
+        }
+
+        public static void Postfix_DropSome_Tip() => Patch_Drop.DrawPostfix();
+
+        // Перехват клика по замкам
         public static void Prefix_DrawItem(object __instance)
         {
-            // Нас интересует только левый клик мыши
             if (Event.current.type != EventType.MouseDown || Event.current.button != 0) return;
 
             InitFields(__instance);
             Thing item = itemField(__instance);
             Rect rect = geometryField(__instance);
-            
             if (item == null) return;
 
             float currentOffset = 8f; 
             float rowY = rect.y + 8f; 
 
-            // Проверяем клик по замку склада
             if (QuickUnloadMod.settings.showStorageLock)
             {
                 Rect rectStorage = new Rect(rect.x + currentOffset, rowY, 20f, 20f);
                 if (Mouse.IsOver(rectStorage))
                 {
                     SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
-                    if (QuickUnloadGameComp.lockedStorage.Contains(item.thingIDNumber)) 
-                        QuickUnloadGameComp.lockedStorage.Remove(item.thingIDNumber);
-                    else 
-                        QuickUnloadGameComp.lockedStorage.Add(item.thingIDNumber);
-                    
-                    Event.current.Use(); // ПОГЛОЩАЕМ КЛИК!
+                    if (QuickUnloadGameComp.lockedStorage.Contains(item.thingIDNumber)) QuickUnloadGameComp.lockedStorage.Remove(item.thingIDNumber);
+                    else QuickUnloadGameComp.lockedStorage.Add(item.thingIDNumber);
+                    Event.current.Use();
                     return;
                 }
                 currentOffset += 22f; 
             }
 
-            // Проверяем клик по замку еды
             if (QuickUnloadMod.settings.showConsumeLock)
             {
                 Rect rectConsume = new Rect(rect.x + currentOffset, rowY, 20f, 20f);
                 if (Mouse.IsOver(rectConsume))
                 {
                     SoundDefOf.Tick_Tiny.PlayOneShotOnCamera(null);
-                    if (QuickUnloadGameComp.lockedConsume.Contains(item.thingIDNumber)) 
-                        QuickUnloadGameComp.lockedConsume.Remove(item.thingIDNumber);
-                    else 
-                        QuickUnloadGameComp.lockedConsume.Add(item.thingIDNumber);
-                    
-                    Event.current.Use(); // ПОГЛОЩАЕМ КЛИК!
+                    if (QuickUnloadGameComp.lockedConsume.Contains(item.thingIDNumber)) QuickUnloadGameComp.lockedConsume.Remove(item.thingIDNumber);
+                    else QuickUnloadGameComp.lockedConsume.Add(item.thingIDNumber);
+                    Event.current.Use();
                 }
             }
         }
 
-        // 2. ПОСТФИКС: Только рисуем иконки поверх всего остального
         public static void Postfix_DrawItem(object __instance)
         {
             InitFields(__instance);
             Thing item = itemField(__instance);
             Rect rect = geometryField(__instance);
-            
             if (item == null) return;
 
             float currentOffset = 8f; 
@@ -141,16 +186,12 @@ namespace InventoryManagement
             {
                 Rect rectStorage = new Rect(rect.x + currentOffset, rowY, 20f, 20f);
                 bool storageLocked = QuickUnloadGameComp.lockedStorage.Contains(item.thingIDNumber);
-                
                 TooltipHandler.TipRegion(rectStorage, "IM.StorageLockTooltip".Translate());
                 
                 Color baseColor = storageLocked ? Color.yellow : Color.white;
-                Color hoverColor = storageLocked ? new Color(1f, 1f, 0.5f) : GenUI.MouseoverColor;
-                
-                GUI.color = Mouse.IsOver(rectStorage) ? hoverColor : baseColor;
+                GUI.color = Mouse.IsOver(rectStorage) ? (storageLocked ? new Color(1f, 1f, 0.5f) : GenUI.MouseoverColor) : baseColor;
                 GUI.DrawTexture(rectStorage, QU_Textures.IconStorage);
                 GUI.color = Color.white;
-                
                 currentOffset += 22f; 
             }
 
@@ -158,13 +199,10 @@ namespace InventoryManagement
             {
                 Rect rectConsume = new Rect(rect.x + currentOffset, rowY, 20f, 20f);
                 bool consumeLocked = QuickUnloadGameComp.lockedConsume.Contains(item.thingIDNumber);
-                
                 TooltipHandler.TipRegion(rectConsume, "IM.ConsumeLockTooltip".Translate());
                 
                 Color baseColor = consumeLocked ? Color.yellow : Color.white;
-                Color hoverColor = consumeLocked ? new Color(1f, 1f, 0.5f) : GenUI.MouseoverColor;
-                
-                GUI.color = Mouse.IsOver(rectConsume) ? hoverColor : baseColor;
+                GUI.color = Mouse.IsOver(rectConsume) ? (consumeLocked ? new Color(1f, 1f, 0.5f) : GenUI.MouseoverColor) : baseColor;
                 GUI.DrawTexture(rectConsume, QU_Textures.IconConsume);
                 GUI.color = Color.white;
             }

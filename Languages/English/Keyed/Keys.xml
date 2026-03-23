@@ -9,6 +9,10 @@
   <IM.ShowConsumeLock>Show auto-use lock button</IM.ShowConsumeLock>
   <IM.ShowUnloadGizmo>Show quick unload button</IM.ShowUnloadGizmo>
   <IM.UseSliderForStacks>Show slider for stacks</IM.UseSliderForStacks>
+  <IM.EnableDropCountSlider>Enable drop some (Shift+Click)</IM.EnableDropCountSlider>
+
+  <IM.DropCount>Drop: {0} ({1})</IM.DropCount>
+  <IM.StackDropTooltip>Hold Shift to choose amount.</IM.StackDropTooltip>
 
   <!-- Gizmos & Tooltips -->
   <IM.Unload>Unload</IM.Unload>

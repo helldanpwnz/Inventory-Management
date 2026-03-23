@@ -18,6 +18,7 @@ namespace InventoryManagement
         public bool showConsumeLock = true; 
 		public bool showUnloadGizmo = false;
 		public bool useSliderForStacks = true;
+		public bool enableDropCountSlider = true;
 
         public override void ExposeData()
         {
@@ -28,6 +29,7 @@ namespace InventoryManagement
             Verse.Scribe_Values.Look(ref showConsumeLock, "showConsumeLock", true);
 			Scribe_Values.Look(ref useSliderForStacks, "useSliderForStacks", true);
 			Scribe_Values.Look(ref showUnloadGizmo, "showUnloadGizmo", false);
+			Scribe_Values.Look(ref enableDropCountSlider, "enableDropCountSlider", true);
         }
     }
 
@@ -52,6 +54,7 @@ namespace InventoryManagement
             listing.CheckboxLabeled("IM.ShowConsumeLock".Translate(), ref settings.showConsumeLock);
 			listing.CheckboxLabeled("IM.ShowUnloadGizmo".Translate(), ref settings.showUnloadGizmo);
 			listing.CheckboxLabeled("IM.UseSliderForStacks".Translate(), ref settings.useSliderForStacks);
+			listing.CheckboxLabeled("IM.EnableDropCountSlider".Translate(), ref settings.enableDropCountSlider);
             
             listing.End();
             base.DoSettingsWindowContents(inRect);
@@ -59,5 +62,4 @@ namespace InventoryManagement
 
         public override string SettingsCategory() => "Inventory Management";
     }
-	
-}	
+}
