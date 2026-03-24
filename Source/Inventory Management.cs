@@ -22,8 +22,8 @@ namespace InventoryManagement
             if (!c.InBounds(map)) return;
 
 // --- УЛУЧШЕННАЯ ЛОГИКА ПОИСКА ЦЕЛИ ---
-            // Ищем пешку в радиусе 1.5 клеток от места клика, чтобы избежать промахов
-            Pawn targetPawn = GenRadial.RadialDistinctThingsAround(c, map, 1.5f, true)
+            // Ищем пешку: если призван (Drafted) — только в этой клетке (чтобы не мешать движению), иначе 1.5 для удобства
+            Pawn targetPawn = GenRadial.RadialDistinctThingsAround(c, map, pawn.Drafted ? 0.4f : 1.5f, true)
                 .OfType<Pawn>()
                 .FirstOrDefault(p => p != pawn);
 
@@ -435,36 +435,38 @@ System.Action<int> action = count => {
                     }
                 }
             }
-else if (targetPawn == null)
-{
-    // Ищем предметы в небольшом радиусе, чтобы не нужно было целиться в пиксель
-    var nearbyItems = GenRadial.RadialDistinctThingsAround(c, map, 1.2f, true)
-        .Where(t => t.def.category == ThingCategory.Item && !(t is Corpse) && pawn.CanReach(t, PathEndMode.ClosestTouch, Danger.Deadly));
+            // --- ЛОГИКА ДЛЯ ПРЕДМЕТОВ НА ЗЕМЛЕ ---
+            // Ищем предметы: если призван — 0.4 (только эта клетка), иначе 1.2.
+            // Выносим поиск из-под else if, чтобы клик по предмету рядом с пешкой не игнорировался.
+            var nearbyItems = GenRadial.RadialDistinctThingsAround(c, map, pawn.Drafted ? 0.4f : 1.2f, true)
+                .Where(t => t.def.category == ThingCategory.Item && !(t is Corpse) && pawn.CanReach(t, PathEndMode.ClosestTouch, Danger.Deadly));
 
-    foreach (Thing t in nearbyItems)
-    {
-        Thing localItem = t;
-        __result.Add(new FloatMenuOption("IM.TakeItemFromStorage".Translate(localItem.LabelCap), delegate
-        {
-            System.Action<int> action = count => {
-                if (MassUtility.GearAndInventoryMass(pawn) >= MassUtility.Capacity(pawn)) {
-                    Verse.Messages.Message("IM.TakeFailedOverweightFromStorage".Translate(localItem.Label, pawn.LabelShort), pawn, RimWorld.MessageTypeDefOf.RejectInput, false);
-                    return;
-                }
-                Job job = JobMaker.MakeJob(JobDefOf.TakeInventory, localItem);
-                job.count = count;
-                job.checkEncumbrance = false;
-                pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
-            };
-            if (QuickUnloadMod.settings.useSliderForStacks && localItem.stackCount > 1) 
-                Find.WindowStack.Add(new Dialog_Slider(x => "IM.TakeSliderFromStorage".Translate() + x, 1, localItem.stackCount, action, localItem.stackCount));
-            else action(localItem.stackCount);
-        })
-        {
-            iconThing = localItem
-        });
-    }
-}
+            // Исключаем те, что уже показаны в меню склада, чтобы не было дубликатов
+            if (slotGroup != null) nearbyItems = nearbyItems.Where(t => !slotGroup.HeldThings.Contains(t));
+
+            foreach (Thing t in nearbyItems)
+            {
+                Thing localItem = t;
+                __result.Add(new FloatMenuOption("IM.TakeItemFromStorage".Translate(localItem.LabelCap), delegate
+                {
+                    System.Action<int> action = count => {
+                        if (MassUtility.GearAndInventoryMass(pawn) >= MassUtility.Capacity(pawn)) {
+                            Verse.Messages.Message("IM.TakeFailedOverweightFromStorage".Translate(localItem.Label, pawn.LabelShort), pawn, RimWorld.MessageTypeDefOf.RejectInput, false);
+                            return;
+                        }
+                        Job job = JobMaker.MakeJob(JobDefOf.TakeInventory, localItem);
+                        job.count = count;
+                        job.checkEncumbrance = false;
+                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                    };
+                    if (QuickUnloadMod.settings.useSliderForStacks && localItem.stackCount > 1) 
+                        Find.WindowStack.Add(new Dialog_Slider(x => "IM.TakeSliderFromStorage".Translate() + x, 1, localItem.stackCount, action, localItem.stackCount));
+                    else action(localItem.stackCount);
+                })
+                {
+                    iconThing = localItem
+                });
+            }
             }
         }
     
