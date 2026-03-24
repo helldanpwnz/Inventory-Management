@@ -22,10 +22,11 @@ namespace InventoryManagement
             if (!c.InBounds(map)) return;
 
 // --- УЛУЧШЕННАЯ ЛОГИКА ПОИСКА ЦЕЛИ ---
-            // Ищем пешку: если призван (Drafted) — только в этой клетке (чтобы не мешать движению), иначе 1.5 для удобства
-            Pawn targetPawn = GenRadial.RadialDistinctThingsAround(c, map, pawn.Drafted ? 0.4f : 1.5f, true)
-                .OfType<Pawn>()
-                .FirstOrDefault(p => p != pawn);
+            // Ищем пешку: используем 100% ванильный алгоритм таргетинга (GenUI.TargetsAt). Это гарантирует совпадение с "Арестовать/Спасти".
+            TargetingParameters tp = new TargetingParameters { canTargetPawns = true, canTargetBuildings = false, canTargetItems = false };
+            Pawn targetPawn = GenUI.TargetsAt(clickPos, tp, true)
+                .Select(t => t.Thing as Pawn)
+                .FirstOrDefault(p => p != null && p != pawn);
 
             if (targetPawn != null && targetPawn.inventory != null && pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.Deadly))
             {
@@ -436,9 +437,8 @@ System.Action<int> action = count => {
                 }
             }
             // --- ЛОГИКА ДЛЯ ПРЕДМЕТОВ НА ЗЕМЛЕ ---
-            // Ищем предметы: если призван — 0.4 (только эта клетка), иначе 1.2.
-            // Выносим поиск из-под else if, чтобы клик по предмету рядом с пешкой не игнорировался.
-            var nearbyItems = GenRadial.RadialDistinctThingsAround(c, map, pawn.Drafted ? 0.4f : 1.2f, true)
+            // Ищем предметы: ваниль при подборе и экипировке всегда ищет предметы строго в клетке клика (c.GetThingList)
+            var nearbyItems = c.GetThingList(map)
                 .Where(t => t.def.category == ThingCategory.Item && !(t is Corpse) && pawn.CanReach(t, PathEndMode.ClosestTouch, Danger.Deadly));
 
             // Исключаем те, что уже показаны в меню склада, чтобы не было дубликатов
