@@ -19,6 +19,7 @@ namespace InventoryManagement
 		public bool showUnloadGizmo = false;
 		public bool useSliderForStacks = true;
 		public bool enableDropCountSlider = true;
+		public bool allowGiveToAnimals = true;
 
         public override void ExposeData()
         {
@@ -30,6 +31,7 @@ namespace InventoryManagement
 			Scribe_Values.Look(ref useSliderForStacks, "useSliderForStacks", true);
 			Scribe_Values.Look(ref showUnloadGizmo, "showUnloadGizmo", false);
 			Scribe_Values.Look(ref enableDropCountSlider, "enableDropCountSlider", true);
+			Scribe_Values.Look(ref allowGiveToAnimals, "allowGiveToAnimals", true);
         }
     }
 
@@ -55,6 +57,7 @@ namespace InventoryManagement
 			listing.CheckboxLabeled("IM.ShowUnloadGizmo".Translate(), ref settings.showUnloadGizmo);
 			listing.CheckboxLabeled("IM.UseSliderForStacks".Translate(), ref settings.useSliderForStacks);
 			listing.CheckboxLabeled("IM.EnableDropCountSlider".Translate(), ref settings.enableDropCountSlider);
+			listing.CheckboxLabeled("IM.AllowGiveToAnimals".Translate(), ref settings.allowGiveToAnimals, "IM.AllowGiveToAnimalsDesc".Translate());
             
             listing.End();
             base.DoSettingsWindowContents(inRect);

@@ -3,21 +3,21 @@
   <JobDef>
     <defName>QuickUnloadInventory</defName>
     <driverClass>InventoryManagement.JobDriver_QuickUnloadInventory</driverClass>
-    <reportString>выгружает инвентарь.</reportString>
+    <reportString>unloading inventory.</reportString>
     <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
   </JobDef>
 
   <JobDef>
     <defName>QuickLoadInventory</defName>
     <driverClass>InventoryManagement.JobDriver_QuickLoadInventory</driverClass>
-    <reportString>забирает вещи.</reportString>
+    <reportString>taking items.</reportString>
     <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
   </JobDef>
 
   <JobDef>
     <defName>QuickGiveInventory</defName>
     <driverClass>InventoryManagement.JobDriver_QuickGiveInventory</driverClass>
-    <reportString>передает вещи.</reportString>
+    <reportString>giving items.</reportString>
     <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
   </JobDef>
   
@@ -26,21 +26,21 @@
   <JobDef>
     <defName>QuickUnequipApparel</defName>
     <driverClass>InventoryManagement.JobDriver_QuickUnequipApparel</driverClass>
-    <reportString>снимает одежду.</reportString>
+    <reportString>unequipping apparel.</reportString>
     <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
   </JobDef>
 
   <JobDef>
     <defName>QuickEquipApparel</defName>
     <driverClass>InventoryManagement.JobDriver_QuickEquipApparel</driverClass>
-    <reportString>надевает одежду.</reportString>
+    <reportString>equipping apparel.</reportString>
     <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
   </JobDef>
   
   <JobDef>
     <defName>QuickTakeInventory</defName>
     <driverClass>InventoryManagement.JobDriver_QuickTakeInventory</driverClass>
-    <reportString>забирает вещи.</reportString>
+    <reportString>taking items.</reportString>
     <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
   </JobDef>
 

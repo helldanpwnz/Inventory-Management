@@ -28,7 +28,7 @@ namespace InventoryManagement
                 .Select(t => t.Thing as Pawn)
                 .FirstOrDefault(p => p != null && p != pawn);
 
-            if (targetPawn != null && targetPawn.inventory != null && pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.Deadly))
+            if (targetPawn != null && targetPawn.inventory != null && !targetPawn.HostileTo(pawn) && (!targetPawn.RaceProps.Animal || (QuickUnloadMod.settings.allowGiveToAnimals && targetPawn.Faction != null)) && pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.Deadly))
             {
 if (pawn.inventory != null && pawn.inventory.innerContainer.Count > 0)
             {
@@ -40,7 +40,7 @@ if (pawn.inventory != null && pawn.inventory.innerContainer.Count > 0)
                     subMenu.Add(new FloatMenuOption("IM.GiveAll".Translate(), delegate
                     {
                         Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickGiveInventory"), targetPawn);
-                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                     }) { iconThing = targetPawn });
 
                     // Группировка предметов
@@ -59,7 +59,7 @@ subMenu.Add(new FloatMenuOption("IM.GiveItem".Translate(first.LabelCap), delegat
                                 System.Action<int> action = count => {
                                     Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickGiveInventory"), targetPawn, first);
                                     job.count = count;
-                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                 };
                                 if (QuickUnloadMod.settings.useSliderForStacks && first.stackCount > 1) Find.WindowStack.Add(new Dialog_Slider(x => "IM.GiveSlider".Translate() + x, 1, first.stackCount, action, first.stackCount));
                                 else action(first.stackCount);
@@ -72,7 +72,7 @@ subMenu.Add(new FloatMenuOption("IM.GiveItem".Translate(first.LabelCap), delegat
 subSub.Add(new FloatMenuOption("IM.GiveAllItem".Translate(first.def.LabelCap), delegate {
     for (int i = 0; i < list.Count; i++) {
         Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickGiveInventory"), targetPawn, list[i]);
-        if (i == 0) pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+        if (i == 0) pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
         else pawn.jobs.jobQueue.EnqueueLast(job);
     }
 }) { iconThing = first });
@@ -83,7 +83,7 @@ subSub.Add(new FloatMenuOption("IM.GiveItem".Translate(local.LabelCap), delegate
                                         System.Action<int> action = count => {
                                             Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickGiveInventory"), targetPawn, local);
                                             job.count = count;
-                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                         };
                                         if (QuickUnloadMod.settings.useSliderForStacks && local.stackCount > 1) Find.WindowStack.Add(new Dialog_Slider(x => "IM.GiveSlider".Translate() + x, 1, local.stackCount, action, local.stackCount));
                                         else action(local.stackCount);
@@ -110,7 +110,7 @@ subSub.Add(new FloatMenuOption("IM.GiveItem".Translate(local.LabelCap), delegate
                     takeMenu.Add(new FloatMenuOption("IM.TakeAll".Translate(), delegate
                     {
                         Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickTakeInventory"), targetPawn);
-                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                     }) { iconThing = targetPawn });
 
                     var groups = targetPawn.inventory.innerContainer.GroupBy(t => t, new ThingStackComparer());
@@ -129,7 +129,7 @@ subSub.Add(new FloatMenuOption("IM.GiveItem".Translate(local.LabelCap), delegate
                                     }
                                     Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickTakeInventory"), targetPawn, first);
                                     job.count = count;
-                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                 };
                                 if (QuickUnloadMod.settings.useSliderForStacks && first.stackCount > 1) Find.WindowStack.Add(new Dialog_Slider(x => "IM.TakeSlider".Translate() + x, 1, first.stackCount, action, first.stackCount));
                                 else action(first.stackCount);
@@ -151,7 +151,7 @@ subSub.Add(new FloatMenuOption("IM.GiveItem".Translate(local.LabelCap), delegate
                                         }
                                         Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickTakeInventory"), targetPawn, item);
                                         job.count = item.stackCount;
-                                        if (i == 0) pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                        if (i == 0) pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                         else pawn.jobs.jobQueue.EnqueueLast(job);
                                         currentMass += item.stackCount * item.GetStatValue(StatDefOf.Mass);
                                     }
@@ -167,7 +167,7 @@ subSub.Add(new FloatMenuOption("IM.GiveItem".Translate(local.LabelCap), delegate
                                             }
                                             Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickTakeInventory"), targetPawn, local);
                                             job.count = count;
-                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                         };
                                         if (QuickUnloadMod.settings.useSliderForStacks && local.stackCount > 1) Find.WindowStack.Add(new Dialog_Slider(x => "IM.TakeSlider".Translate() + x, 1, local.stackCount, action, local.stackCount));
                                         else action(local.stackCount);
@@ -196,7 +196,7 @@ if (pawn.inventory != null && pawn.inventory.innerContainer.Count > 0)
                     subMenu.Add(new FloatMenuOption("IM.StoreInventory".Translate(), delegate
                     {
                         Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickUnloadInventory"), c);
-                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                     }));
 
                     // Группировка предметов
@@ -215,7 +215,7 @@ subMenu.Add(new FloatMenuOption("IM.StoreItem".Translate(first.LabelCap), delega
                                 System.Action<int> action = count => {
                                     Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickUnloadInventory"), c, first);
                                     job.count = count;
-                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                 };
                                 if (QuickUnloadMod.settings.useSliderForStacks && first.stackCount > 1) Find.WindowStack.Add(new Dialog_Slider(x => "IM.StoreSlider".Translate() + x, 1, first.stackCount, action, first.stackCount));
                                 else action(first.stackCount);
@@ -228,7 +228,7 @@ subMenu.Add(new FloatMenuOption("IM.StoreItem".Translate(first.LabelCap), delega
 subSub.Add(new FloatMenuOption("IM.StoreAllItem".Translate(first.def.LabelCap), delegate {
     for (int i = 0; i < list.Count; i++) {
         Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickUnloadInventory"), c, list[i]);
-        if (i == 0) pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+        if (i == 0) pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
         else pawn.jobs.jobQueue.EnqueueLast(job);
     }
 }) { iconThing = first });
@@ -239,7 +239,7 @@ subSub.Add(new FloatMenuOption("IM.StoreItem".Translate(local.LabelCap), delegat
                                         System.Action<int> action = count => {
                                             Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickUnloadInventory"), c, local);
                                             job.count = count;
-                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                         };
                                         if (QuickUnloadMod.settings.useSliderForStacks && local.stackCount > 1) Find.WindowStack.Add(new Dialog_Slider(x => "IM.StoreSlider".Translate() + x, 1, local.stackCount, action, local.stackCount));
                                         else action(local.stackCount);
@@ -265,7 +265,7 @@ subSub.Add(new FloatMenuOption("IM.StoreItem".Translate(local.LabelCap), delegat
                         subMenu.Add(new FloatMenuOption("IM.TakeAllFromStorage".Translate(), delegate
                         {
                             Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickLoadInventory"), c);
-                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                         }));
 
                         // --- ГРУППИРОВКА ПРЕДМЕТОВ НА СКЛАДЕ ---
@@ -291,7 +291,7 @@ System.Action<int> action = count => {
                                     Job job = JobMaker.MakeJob(JobDefOf.TakeInventory, localItem);
                                     job.count = count;
                                     job.checkEncumbrance = false; // Отключаем ванильный запрет!
-                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                 };
                                 if (QuickUnloadMod.settings.useSliderForStacks && localItem.stackCount > 1) Find.WindowStack.Add(new Dialog_Slider(x => "IM.TakeSliderFromStorage".Translate() + x, 1, localItem.stackCount, action, localItem.stackCount));
                                 else action(localItem.stackCount);
@@ -329,7 +329,7 @@ subSubMenu.Add(new FloatMenuOption("IM.TakeAllItemFromStorage".Translate(groupLa
                 job.count = item.stackCount;
                 job.checkEncumbrance = false;
 
-                if (i == 0) pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                if (i == 0) pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                 else pawn.jobs.jobQueue.EnqueueLast(job);
                 
                 // Добавляем вес для проверки следующего стака в цикле
@@ -351,7 +351,7 @@ System.Action<int> action = count => {
                                     Job job = JobMaker.MakeJob(JobDefOf.TakeInventory, localItem);
                                     job.count = count;
                                     job.checkEncumbrance = false; // Отключаем ванильный запрет!
-                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                 };
                                 if (QuickUnloadMod.settings.useSliderForStacks && localItem.stackCount > 1) Find.WindowStack.Add(new Dialog_Slider(x => "IM.TakeSliderFromStorage".Translate() + x, 1, localItem.stackCount, action, localItem.stackCount));
                                 else action(localItem.stackCount);
@@ -391,7 +391,7 @@ System.Action<int> action = count => {
                                     unequipMenu.Add(new FloatMenuOption("IM.UnequipAll".Translate(), delegate
                                     {
                                         Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickUnequipApparel"), c);
-                                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                     }));
                                     foreach (Apparel ap in pawn.apparel.WornApparel)
                                     {
@@ -399,7 +399,7 @@ System.Action<int> action = count => {
                                         unequipMenu.Add(new FloatMenuOption("IM.UnequipItem".Translate(localAp.LabelCap), delegate
                                         {
                                             Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickUnequipApparel"), c, localAp);
-                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                         })
                                         { iconThing = localAp });
                                     }
@@ -415,7 +415,7 @@ System.Action<int> action = count => {
                                     wearMenu.Add(new FloatMenuOption("IM.WearAll".Translate(), delegate
                                     {
                                         Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickEquipApparel"), c);
-                                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                     }));
                                     foreach (Apparel ap in availableApparel)
                                     {
@@ -423,7 +423,7 @@ System.Action<int> action = count => {
                                         wearMenu.Add(new FloatMenuOption("IM.WearItem".Translate(localAp.LabelCap), delegate
                                         {
                                             Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickEquipApparel"), c, localAp);
-                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                                            pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                                         })
                                         { iconThing = localAp });
                                     }
@@ -457,7 +457,7 @@ System.Action<int> action = count => {
                         Job job = JobMaker.MakeJob(JobDefOf.TakeInventory, localItem);
                         job.count = count;
                         job.checkEncumbrance = false;
-                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown);
                     };
                     if (QuickUnloadMod.settings.useSliderForStacks && localItem.stackCount > 1) 
                         Find.WindowStack.Add(new Dialog_Slider(x => "IM.TakeSliderFromStorage".Translate() + x, 1, localItem.stackCount, action, localItem.stackCount));
@@ -764,7 +764,9 @@ if (job.targetB != null && job.targetB.HasThing)
     {
         public static void Postfix(Verse.Thing __instance)
         {
-            // Убираем из хэш-сетов только если это был предмет
+            // БЫСТРЫЙ ВЫХОД: Если заблокированных вещей нет, ничего не делаем
+            if (QuickUnloadGameComp.lockedStorage.Count == 0 && QuickUnloadGameComp.lockedConsume.Count == 0) return;
+
             if (__instance.def.category == Verse.ThingCategory.Item)
             {
                 QuickUnloadGameComp.lockedStorage.Remove(__instance.thingIDNumber);

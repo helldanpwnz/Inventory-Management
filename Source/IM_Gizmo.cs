@@ -63,7 +63,7 @@ namespace InventoryManagement
                             foreach (var group in targetGroups)
                             {
                                 Job job = JobMaker.MakeJob(DefDatabase<JobDef>.GetNamed("QuickUnloadInventory"), group.CellsList[0]);
-                                if (first) { __instance.jobs.TryTakeOrderedJob(job, JobTag.Misc); first = false; }
+                                if (first) { __instance.jobs.TryTakeOrderedJob(job, JobTag.Misc, KeyBindingDefOf.QueueOrder.IsDown); first = false; }
                                 else { __instance.jobs.jobQueue.EnqueueLast(job); }
                             }
                         }

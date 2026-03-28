@@ -39,28 +39,26 @@ namespace InventoryManagement
         public static void Prefix(Verse.Thing thing, ref float width, out float __state, bool inventory)
         {
             __state = width; 
+            if (!inventory) return;
             
-            // ПРОВЕРКА: Рисуем только для своих
+            // ПРОВЕРКА: Рисуем только для своих колонистов
             Pawn selPawn = Find.Selector.SingleSelectedThing as Pawn;
             if (selPawn == null || !selPawn.IsColonistPlayerControlled) return;
 
-            if (inventory)
-            {
-                float shift = 0f;
-                if (QuickUnloadMod.settings.showStorageLock) shift += 24f;
-                if (QuickUnloadMod.settings.showConsumeLock) shift += 24f;
-                width -= shift; 
-            }
+            float shift = 0f;
+            if (QuickUnloadMod.settings.showStorageLock) shift += 24f;
+            if (QuickUnloadMod.settings.showConsumeLock) shift += 24f;
+            width -= shift; 
         }
 		
 
         public static void Postfix(ref float y, Verse.Thing thing, bool inventory, float __state)
         {
+            if (!inventory) return;
+
             // ПРОВЕРКА: Рисуем только для своих
             Pawn selPawn = Find.Selector.SingleSelectedThing as Pawn;
             if (selPawn == null || !selPawn.IsColonistPlayerControlled) return;
-
-            if (inventory)
             {
                 float rowY = y - 28f; 
                 float originalWidth = __state; 
@@ -188,8 +186,11 @@ namespace InventoryManagement
     {
         public static void Postfix(Thing t, ref bool __result)
         {
-            // Если вещь в инвентаре и заблокирована от поедания - делаем её "запрещенной" для авто-поиска
-            if (!__result && t != null && t.ParentHolder is Pawn_InventoryTracker && QuickUnloadGameComp.lockedConsume.Contains(t.thingIDNumber))
+            // БЫСТРЫЙ ВЫХОД: Если уже запрещено, если вещи нет, или если ничего не заблокировано игроком
+            if (__result || t == null || QuickUnloadGameComp.lockedConsume.Count == 0) return;
+
+            // Проверяем ParentHolder только если ID вещи есть в списке заблокированных
+            if (QuickUnloadGameComp.lockedConsume.Contains(t.thingIDNumber) && t.ParentHolder is Pawn_InventoryTracker)
             {
                 __result = true;
             }

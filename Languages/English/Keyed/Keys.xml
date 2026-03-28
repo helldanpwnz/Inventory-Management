@@ -10,6 +10,8 @@
   <IM.ShowUnloadGizmo>Show quick unload button</IM.ShowUnloadGizmo>
   <IM.UseSliderForStacks>Show slider for stacks</IM.UseSliderForStacks>
   <IM.EnableDropCountSlider>Enable drop some (Shift+Click)</IM.EnableDropCountSlider>
+  <IM.AllowGiveToAnimals>Allow giving items to animals</IM.AllowGiveToAnimals>
+  <IM.AllowGiveToAnimalsDesc>Enables the ability to transfer items to tamed/allied pack animals via the context menu.</IM.AllowGiveToAnimalsDesc>
 
   <IM.DropCount>Drop: {0} ({1})</IM.DropCount>
   <IM.StackDropTooltip>Hold Shift to choose amount.</IM.StackDropTooltip>

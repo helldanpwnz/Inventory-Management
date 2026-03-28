@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <QuickUnloadInventory.reportString>выгружает инвентарь.</QuickUnloadInventory.reportString>
+  <QuickLoadInventory.reportString>забирает вещи.</QuickLoadInventory.reportString>
+  <QuickGiveInventory.reportString>передает вещи.</QuickGiveInventory.reportString>
+  <QuickUnequipApparel.reportString>снимает одежду.</QuickUnequipApparel.reportString>
+  <QuickEquipApparel.reportString>надевает одежду.</QuickEquipApparel.reportString>
+  <QuickTakeInventory.reportString>забирает вещи.</QuickTakeInventory.reportString>
+</LanguageData>
