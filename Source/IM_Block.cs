@@ -18,8 +18,11 @@ namespace InventoryManagement
 
         public QuickUnloadGameComp(Game game) : base()
         {
-            lockedStorage.Clear();
-            lockedConsume.Clear();
+            if (lockedStorage == null) lockedStorage = new HashSet<int>();
+            else lockedStorage.Clear();
+
+            if (lockedConsume == null) lockedConsume = new HashSet<int>();
+            else lockedConsume.Clear();
         }
 
         public override void ExposeData()
@@ -120,9 +123,9 @@ namespace InventoryManagement
     [HarmonyPatch(typeof(Pawn_InventoryTracker), "get_FirstUnloadableThing")]
     public static class Patch_FirstUnloadableThing
     {
-        // Поле "inventoryUnloadable" в ThingDef является приватным, поэтому используем FieldRef для быстрого доступа.
+        // Поле "inventorySpawnUnloadable" в ThingDef используется для определения того, что вещь подлежит выгрузке.
         private static readonly AccessTools.FieldRef<ThingDef, bool> inventoryUnloadableRef = 
-            AccessTools.FieldRefAccess<ThingDef, bool>("inventoryUnloadable");
+            AccessTools.FieldRefAccess<ThingDef, bool>("inventorySpawnUnloadable");
 
         public static void Postfix(Pawn_InventoryTracker __instance, ref ThingCount __result)
         {
@@ -139,7 +142,7 @@ namespace InventoryManagement
                 {
                     Thing thing = innerList[i];
                     // Используем кешированную ссылку на приватное поле
-                    if (inventoryUnloadableRef(thing.def) && !QuickUnloadGameComp.lockedStorage.Contains(thing.thingIDNumber))
+                    if (thing != null && inventoryUnloadableRef != null && inventoryUnloadableRef(thing.def) && !QuickUnloadGameComp.lockedStorage.Contains(thing.thingIDNumber))
                     {
                         __result = new ThingCount(thing, thing.stackCount);
                         break;
@@ -170,8 +173,10 @@ namespace InventoryManagement
 
         public static bool Prefix(Verse.ThingOwner __instance, Verse.Thing thing)
         {
+            if (thing == null) return true;
+            
             // Pawn_InventoryTracker тоже находится в Verse
-            if (__instance.Owner is Verse.Pawn_InventoryTracker && !QuickUnloadMod.settings.allowManualDrop && QuickUnloadGameComp.lockedStorage.Contains(thing.thingIDNumber))
+            if (__instance != null && __instance.Owner is Verse.Pawn_InventoryTracker && !QuickUnloadMod.settings.allowManualDrop && QuickUnloadGameComp.lockedStorage.Contains(thing.thingIDNumber))
             {
                 Verse.Messages.Message("IM.ItemIsLocked".Translate(), RimWorld.MessageTypeDefOf.RejectInput, false);
                 return false;

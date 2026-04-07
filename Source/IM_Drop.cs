@@ -14,7 +14,7 @@ namespace InventoryManagement
         // Патч на подсказку (ванильный TipSignal)
         public static void Prefix_TipRegion(ref TipSignal tip)
         {
-            if (QuickUnloadMod.settings.enableDropCountSlider && changeTip && tip.text == "DropThing".Translate())
+            if (QuickUnloadMod.settings.enableDropCountSlider && changeTip && tip.text != null && tip.text == "DropThing".Translate())
             {
                 tip.text = "IM.StackDropTooltip".Translate();
             }
@@ -23,7 +23,7 @@ namespace InventoryManagement
         // Патч на подсказку (TaggedString - используется в Nice Inventory)
         public static void Prefix_TipRegion_Tagged(ref TaggedString text)
         {
-            if (QuickUnloadMod.settings.enableDropCountSlider && changeTip && text == "DropThing".Translate())
+            if (QuickUnloadMod.settings.enableDropCountSlider && changeTip && text != null && text == "DropThing".Translate())
             {
                 text = "IM.StackDropTooltip".Translate();
             }

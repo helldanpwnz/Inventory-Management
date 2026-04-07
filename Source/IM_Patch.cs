@@ -118,8 +118,16 @@ namespace InventoryManagement
 
         private static void InitFields(object instance)
         {
-            if (itemField == null) itemField = AccessTools.FieldRefAccess<Thing>(instance.GetType(), "Item");
-            if (geometryField == null) geometryField = AccessTools.FieldRefAccess<Rect>(instance.GetType(), "Geometry");
+            if (itemField == null)
+            {
+                var field = AccessTools.Field(instance.GetType(), "Item");
+                if (field != null) itemField = AccessTools.FieldRefAccess<object, Thing>(field);
+            }
+            if (geometryField == null)
+            {
+                var field = AccessTools.Field(instance.GetType(), "Geometry");
+                if (field != null) geometryField = AccessTools.FieldRefAccess<object, Rect>(field);
+            }
         }
 
         // Вспомогательный патч для тултипов DropSome в Nice Inventory
@@ -138,6 +146,7 @@ namespace InventoryManagement
             if (Event.current.type != EventType.MouseDown || Event.current.button != 0) return;
 
             InitFields(__instance);
+            if (itemField == null || geometryField == null) return;
             Thing item = itemField(__instance);
             Rect rect = geometryField(__instance);
             if (item == null) return;
@@ -175,6 +184,7 @@ namespace InventoryManagement
         public static void Postfix_DrawItem(object __instance)
         {
             InitFields(__instance);
+            if (itemField == null || geometryField == null) return;
             Thing item = itemField(__instance);
             Rect rect = geometryField(__instance);
             if (item == null) return;

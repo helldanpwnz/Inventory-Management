@@ -13,11 +13,14 @@ namespace InventoryManagement
     {
         public static IEnumerable<Gizmo> Postfix(IEnumerable<Gizmo> __result, Pawn __instance)
         {
-            // Сначала отдаем все стандартные кнопки
-            foreach (var g in __result) yield return g;
+            // Сначала отдаем все стандартные кнопки (проверка на null на случай конфликтов с другими модами)
+            if (__result != null)
+            {
+                foreach (var g in __result) yield return g;
+            }
 
             // 1. Базовые проверки: настройки и контроль игрока
-            if (!QuickUnloadMod.settings.showUnloadGizmo || !__instance.IsColonistPlayerControlled) yield break;
+            if (!QuickUnloadMod.settings.showUnloadGizmo || !__instance.IsColonistPlayerControlled || __instance.Map == null) yield break;
 
             // 2. Проверяем, есть ли ВООБЩЕ что-то в инвентаре, кроме заблокированного
             bool hasItems = false;
@@ -44,7 +47,7 @@ namespace InventoryManagement
                     action = delegate
                     {
                         // Снимаем призыв при нажатии (чтобы пешка сразу пошла разгружаться)
-                        if (__instance.Drafted) __instance.drafter.Drafted = false;
+                        if (__instance.Drafted && __instance.drafter != null) __instance.drafter.Drafted = false;
 
                         HashSet<SlotGroup> targetGroups = new HashSet<SlotGroup>();
                         foreach (var item in __instance.inventory.innerContainer)

@@ -19,7 +19,7 @@ namespace InventoryManagement
 
             IntVec3 c = IntVec3.FromVector3(clickPos);
             Map map = pawn.Map;
-            if (!c.InBounds(map)) return;
+            if (map == null || !c.InBounds(map)) return;
 
 // --- УЛУЧШЕННАЯ ЛОГИКА ПОИСКА ЦЕЛИ ---
             // Ищем пешку: используем 100% ванильный алгоритм таргетинга (GenUI.TargetsAt). Это гарантирует совпадение с "Арестовать/Спасти".
@@ -474,7 +474,7 @@ System.Action<int> action = count => {
 // Драйвер 1: Подойти и сбросить вещи (с учетом галочки в настройках)
     public class JobDriver_QuickUnloadInventory : JobDriver
     {
-        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -558,7 +558,7 @@ if (job.targetB != null && job.targetB.HasThing)
     // Драйвер 2: Подойти и забрать ВСЕ вещи со склада до перевеса
     public class JobDriver_QuickLoadInventory : JobDriver
     {
-        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -592,7 +592,7 @@ take.initAction = delegate
 // НОВЫЙ ДРАЙВЕР: Подойти к пешке и передать вещи
     public class JobDriver_QuickGiveInventory : JobDriver
     {
-        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -640,7 +640,7 @@ if (job.targetB != null && job.targetB.HasThing)
 // ДРАЙВЕР: Снять одежду и положить на склад
     public class JobDriver_QuickUnequipApparel : JobDriver
     {
-        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -708,7 +708,7 @@ if (job.targetB != null && job.targetB.HasThing)
     // ДРАЙВЕР: Надеть одежду со склада
     public class JobDriver_QuickEquipApparel : JobDriver
     {
-        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed);
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
@@ -767,7 +767,7 @@ if (job.targetB != null && job.targetB.HasThing)
             // БЫСТРЫЙ ВЫХОД: Если заблокированных вещей нет, ничего не делаем
             if (QuickUnloadGameComp.lockedStorage.Count == 0 && QuickUnloadGameComp.lockedConsume.Count == 0) return;
 
-            if (__instance.def.category == Verse.ThingCategory.Item)
+            if (__instance.def?.category == Verse.ThingCategory.Item)
             {
                 QuickUnloadGameComp.lockedStorage.Remove(__instance.thingIDNumber);
                 QuickUnloadGameComp.lockedConsume.Remove(__instance.thingIDNumber);
@@ -778,7 +778,7 @@ if (job.targetB != null && job.targetB.HasThing)
 // ДРАЙВЕР: Подойти к пешке и забрать вещи в свой инвентарь
     public class JobDriver_QuickTakeInventory : JobDriver
     {
-        public override bool TryMakePreToilReservations(bool errorOnFailed) => true;
+        public override bool TryMakePreToilReservations(bool errorOnFailed) => pawn.Reserve(job.targetA, job, 1, -1, null, errorOnFailed) && (job.targetB == null || !job.targetB.HasThing || pawn.Reserve(job.targetB, job, 1, -1, null, errorOnFailed));
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
